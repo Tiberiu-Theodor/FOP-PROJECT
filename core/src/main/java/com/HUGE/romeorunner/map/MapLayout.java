@@ -11,6 +11,7 @@ public class MapLayout {
     //Instead, try to focus on creating a MATRIX using integers in this class. I just created it for now so that I can use it in Player class. Thank you.
     //Also, we must agree(yes, all of us) on what each value in the matrix map will be. For example 0 = player, -1 = spikes, 1 = ground etc. Please think about that too.
     //For now, for simplicity we will use: player = 0, free space/ground = 1, wall = 2, key = 3, healing potion = 4, enemy1 = -1, enemy2 = -2, enemy3 = -3.
+    //We may change the matrix from an int to a enum value(instead of 0 1 2 etc we will have player ground ...)
 
     public int[][] getMap() {
         return map;
