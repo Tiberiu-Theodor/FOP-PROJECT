@@ -38,7 +38,7 @@ public class MapLayout {
     public void moveTo(Player player, int x, int y){
         int playerX = player.getPosition_x();
         int playerY = player.getPosition_y();
-        map[playerX][playerY] = map[x][y];
+        map[playerX][playerY] = 1;
         map[x][y] = 0;
         player.setPosition_x(x);
         player.setPosition_y(y);
