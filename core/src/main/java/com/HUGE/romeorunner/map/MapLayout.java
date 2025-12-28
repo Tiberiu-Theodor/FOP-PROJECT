@@ -29,6 +29,28 @@ public class MapLayout {
         return map[x][y]==4;
     }
 
+    public int getKeyX(){
+        for(int x=0;x<map.length;x++){
+            for(int y=0;y<map[x].length;y++){
+                if(map[x][y]==3) {
+                    return x;
+                }
+            }
+        }
+        return -1;
+    }
+
+    public int getKeyY(){
+        for(int x=0;x<map.length;x++){
+            for(int y=0;y<map[x].length;y++){
+                if(map[x][y]==3){
+                    return y;
+                }
+            }
+        }
+        return -1;
+    }
+
     public boolean canMoveTo(int x, int y){
         if(x<0 || y<0 || x>=map.length || y>=map[0].length){
             return false;
