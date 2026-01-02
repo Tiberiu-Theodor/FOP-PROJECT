@@ -18,11 +18,8 @@ import com.HUGE.romeorunner.map.MapLayout;
  @author Tiberiu-Theodor Circiu
  */
 
-public class Player implements Movement, Attack {
+public class Player extends GameObject implements Movement, Attack {
 
-    private int position_x;
-    private int position_y;
-    private Orientation orientation;
     private int health;
     private final int maxHealth = 3;
     private MapLayout map;
@@ -34,14 +31,13 @@ public class Player implements Movement, Attack {
      * Constructor of the player class.
      *
      * @param map connects the player to the map
-     * @param position_x is the starting x coordinate of the player in the map matrix
-     * @param position_y is the starting y coordinate of the player in the map matrix
+     * @param x is the starting x coordinate of the player in the map matrix
+     * @param y is the starting y coordinate of the player in the map matrix
      */
 
-    public Player(MapLayout map, int position_x, int position_y) {
-        this.position_x = position_x;
-        this.position_y = position_y;
-        this.orientation = Orientation.NORTH;
+    public Player(MapLayout map, int x, int y) {
+        super(x,y);
+        super.orientation = Orientation.NORTH;
         this.health = 3;
         this.map = map;
         this.key = false;
@@ -50,22 +46,6 @@ public class Player implements Movement, Attack {
     /**
      * The following methods are the getters and setters.
      */
-
-    public int getPosition_x() {
-        return position_x;
-    }
-
-    public void setPosition_x(int position_x) {
-        this.position_x = position_x;
-    }
-
-    public int getPosition_y() {
-        return position_y;
-    }
-
-    public void setPosition_y(int position_y) {
-        this.position_y = position_y;
-    }
 
     public Orientation getOrientation() {
         return orientation;
@@ -112,7 +92,7 @@ public class Player implements Movement, Attack {
     }
 
 
-    //TO-DO: clean logic and do not use Player to change Map, instead create methods in map class
+    //TO-DO: clean logic and create a Shield or any other power-up!
 
     /**
      * Updates the invincibility timer for the player.
@@ -130,6 +110,7 @@ public class Player implements Movement, Attack {
     /**
      * Checks whether the tile with the specified coordinates to assess whether it deals damage or heals the player.
      * If the player is dead after it received damage, the game is over.
+     * Also checks whether the player has finished the maze and displays a screen if it did.
      *
      * @param x is the x coordinate for the tile that needs to be checked
      * @param y is the y coordinate for the tile that needs to be checked
@@ -142,9 +123,19 @@ public class Player implements Movement, Attack {
         if(map.healsPlayer(x,y) && health<maxHealth){
             heal();
         }
+        if(map.slipsPlayer(x,y)){
+            slip();
+        }
+        if(x == map.getKeyX() && y == map.getKeyY()){
+            this.setKey(true);
+        }
         if(isDead()){
             System.out.println("GAME OVER!");
-            // display game over screen and game over sound effect
+            // display Game Over screen and game over sound effect
+        }
+        if(x == map.getExitX() && y == map.getExitY() && this.hasKey()){
+            System.out.println("Victory!");
+            // display Victory screen
         }
     }
 
@@ -158,7 +149,7 @@ public class Player implements Movement, Attack {
             return;
         }
 
-        setHealth(health-1);
+        setHealth(health - 1);
         setInvincibility(invincibilityDuration);
         //play invincibility effect after the player turns red
     }
@@ -175,8 +166,34 @@ public class Player implements Movement, Attack {
         }
     }
 
+    /**
+     * Slips the player in the direction they are currently facing.
+     * If the player will bump into a wall by slipping, the player stands still.
+     */
+
+    public void slip(){
+        int nextX = x;
+        int nextY = y;
+
+        switch(orientation){
+            case NORTH -> nextY++;
+            case EAST -> nextX++;
+            case SOUTH -> nextY--;
+            case WEST -> nextX--;
+        }
+
+        if(map.canMoveTo(this, nextX, nextY)){
+            switch(orientation){
+                case NORTH -> move(Direction.UP);
+                case EAST -> move(Direction.RIGHT);
+                case SOUTH -> move(Direction.DOWN);
+                case WEST -> move(Direction.LEFT);
+            }
+        }
+    }
+
     public boolean isDead(){
-        return health<=0;
+        return health <= 0;
     }
 
     public boolean isInvincible(){
@@ -195,34 +212,34 @@ public class Player implements Movement, Attack {
         switch (direction) {
 
             case UP->{
-                if(map.canMoveTo(position_x,position_y+1)) {
-                    map.moveTo(this, position_x, position_y+1);
+                if(map.canMoveTo(this, x, y+1)) {
+                    map.moveTo(this, x, y+1);
                 }
-                check(position_x, position_y);
+                check(x, y);
                 orientation = Orientation.NORTH;
             }
 
             case DOWN->{
-                if(map.canMoveTo(position_x,position_y-1)) {
-                    map.moveTo(this, position_x, position_y-1);
+                if(map.canMoveTo(this, x, y-1)) {
+                    map.moveTo(this, x, y-1);
                 }
-                check(position_x, position_y);
+                check(x, y);
                 orientation = Orientation.SOUTH;
             }
 
             case LEFT->{
-                if(map.canMoveTo(position_x-1,position_y)) {
-                    map.moveTo(this, position_x-1, position_y);
+                if(map.canMoveTo(this, x-1,y)) {
+                    map.moveTo(this, x-1, y);
                 }
-                check(position_x, position_y);
+                check(x, y);
                 orientation = Orientation.WEST;
             }
 
             case RIGHT->{
-                if(map.canMoveTo(position_x+1,position_y)) {
-                    map.moveTo(this, position_x+1, position_y);
+                if(map.canMoveTo(this, x+1, y)) {
+                    map.moveTo(this, x+1, y);
                 }
-                check(position_x, position_y);
+                check(x, y);
                 orientation = Orientation.EAST;
             }
 

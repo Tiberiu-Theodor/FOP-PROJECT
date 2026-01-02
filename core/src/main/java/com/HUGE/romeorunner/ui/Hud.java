@@ -45,18 +45,33 @@ public class Hud {
         healthLabel.setText("Health: " + player.getHealth());
         keyLabel.setText("Key: " + (player.hasKey() ? "YES" : "NO"));
 
-        int diff_x = map.getKeyX()-player.getPosition_x();
-        int diff_y = map.getKeyY()-player.getPosition_y();
-        if (Math.abs(diff_x) > Math.abs(diff_y)) {
-            if (diff_x > 0) {
-                arrow.setRotation(0);
+        if(!player.hasKey()) {
+            int diff_x = map.getKeyX() - player.getX();
+            int diff_y = map.getKeyY() - player.getY();
+            if (Math.abs(diff_x) > Math.abs(diff_y)) {
+                if (diff_x > 0) {
+                    arrow.setRotation(0);
+                } else arrow.setRotation(180);
+            } else {
+                if (diff_y > 0) {
+                    arrow.setRotation(90);
+                } else arrow.setRotation(270);
             }
-            else arrow.setRotation(180);
-        } else {
-            if (diff_y > 0) {
-                arrow.setRotation(90);
+        }
+        else {
+            int diff_x = map.getExitX() - player.getX();
+            int diff_y = map.getExitY() - player.getY();
+            if(Math.abs(diff_x) > Math.abs(diff_y)) {
+                if (diff_x > 0) {
+                    arrow.setRotation(0);
+                }
+                else arrow.setRotation(180);
+            } else  {
+                if (diff_y > 0) {
+                    arrow.setRotation(90);
+                }
+                else arrow.setRotation(270);
             }
-            else arrow.setRotation(270);
         }
     }
 
