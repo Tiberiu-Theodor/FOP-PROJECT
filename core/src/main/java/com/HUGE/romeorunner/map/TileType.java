@@ -11,4 +11,5 @@ public class TileType {
     public static final int POTION = 7;
     public static final int PLAYER = 8;
     public static final int ICE = 9;
+    public static final int SHIELD = 10;
 }

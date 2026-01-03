@@ -13,7 +13,8 @@ public class MapLayout {
     private int entryX;
     private int entryY;
 
-    //Hello Tasin, I have created the class TyleType according to the problem statement, please check that too in case I missed anything.
+    //Hello Tasin, I have created the class TyleType according to the problem statement, please check that too in case I missed anything. You may need to convert
+    //it later to an ENUM and convert the int[][] map to a *insert enum name*[][] map, but don't focus on that for now.
     //Try to focus on working on a MATRIX using integers in this class, as using lists of classes(Ground Wall etc.) would be way too tedious
     //I just created it for now so that I can use it in Player class. Thank you.
     //I have decided that we should have the unique enemy as ICE ( or a banana peel if we want to be funny),
@@ -72,6 +73,10 @@ public class MapLayout {
 
     public boolean slipsPlayer(int x, int y){
         return map[x][y]== TileType.ICE;
+    }
+
+    public boolean protectsPlayer(int x, int y){
+        return map[x][y]== TileType.SHIELD;
     }
 
     public int findKeyX(){
@@ -140,6 +145,20 @@ public class MapLayout {
         return -1;
     }
 
+    /**
+     * Checks whether the entity provided as a parameter can move to the specified tile
+     * with coordinates x and y.
+     * The method first checks if the movement is out of bounds, then if it is a wall.
+     * As a special rule, if the tile is the exit and the player does not have the key, then it cannot move there yet.
+     *
+     * @param o is the entity that wants to move
+     * @param x is the x coordinate to which the entity wants to move
+     * @param y is the y coordinate to which the entity wants to move
+     * @author Tiberiu-Theodor Circiu
+     */
+
+
+
     public boolean canMoveTo(GameObject o, int x, int y){
         if(x<0 || y<0 || x>=map.length || y>=map[0].length){
             return false;
@@ -156,14 +175,47 @@ public class MapLayout {
         return true;
     }
 
+    /**
+     * Handles the movement of an entity within the map matrix.
+     * This method first saves the tile that was under the entity in the old position of said entity,
+     * then it proceeds to check whether it is a Player or an Enemy.
+     * The player is able to pick up collectibles(Key,Shield,Potion), while the enemies should not interfere with those,
+     * as not to steal those from the player.
+     * At the end, the method sets the value of coordinates x and y according to which type of entity wishes to move on said tile
+     *
+     *
+     * @param o is the entity that wants to move
+     * @param x is the x coordinate to which the entity wants to move
+     * @param y is the y coordinate to which the entity wants to move
+     * @author Tiberiu-Theodor Circiu
+     */
+
+
     public void moveTo(GameObject o, int x, int y){
         int objectX = o.getX();
         int objectY = o.getY();
-        map[objectX][objectY] = TileType.GROUND;
-        switch(o.getClass().getSimpleName()){
-            case "Player" -> map[x][y] = TileType.PLAYER;
-            case "Enemy" -> map[x][y] = TileType.ENEMY;
+        map[objectX][objectY] = o.getTileUnder();
+
+        if(o instanceof Player) {
+            int targetTile = map[x][y];
+            if(targetTile == TileType.KEY || targetTile == TileType.SHIELD || targetTile == TileType.POTION){
+                o.setTileUnder(TileType.GROUND);
+            }
+            else {
+                o.setTileUnder(targetTile);
+            }
         }
+        else {
+            o.setTileUnder(map[x][y]);
+        }
+
+        if(o instanceof Player) {
+            map[x][y] = TileType.PLAYER;
+        }
+        else {
+            map[x][y] = TileType.ENEMY;
+        }
+
         o.setX(x);
         o.setY(y);
     }
